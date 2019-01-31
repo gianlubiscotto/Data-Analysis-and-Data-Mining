@@ -48,6 +48,10 @@ for i in range(0,ds.shape[1]-1):
         X_selected.append(np.array(ds.iloc[:,i]))
 X_selected= np.transpose(X_selected)        
 #utilizzando questo dataset il miglior modello rimane lo stesso ma l'accuratezza scende leggermente        
+#Miglior tune: {'C': 10.0, 'gamma': 0.1, 'kernel': 'rbf'} 
+#con media: 0.9707824513794663 +/-( 0.009174944347157835 )
+#Accuratezza del miglior modello su tutto il dataset: 0.9841700587969244
+
 
 #SEZIONE 2: Single accuracy con parametro fisso
 clf = svm.SVC(kernel='linear',C=1)

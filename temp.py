@@ -29,6 +29,7 @@ Y_test = ds_shuff.iloc[nl:,-1]
 
 
 #Plotting delle features
+X_selected=[]
 for i in range(0,ds.shape[1]-1):
     xp = positive.iloc[:,i]
     xn = negative.iloc[:,i]
@@ -42,8 +43,11 @@ for i in range(0,ds.shape[1]-1):
     plt.grid(True)
     plt.show()
     variance = np.var(ds.iloc[:,i])
-    print(variance,np.mean(ds.iloc[:,i]))
-
+    #selezione feature in base alla varianza
+    if(variance>0.2):
+        X_selected.append(np.array(ds.iloc[:,i]))
+X_selected= np.transpose(X_selected)        
+#utilizzando questo dataset il miglior modello rimane lo stesso ma l'accuratezza scende leggermente        
 
 #SEZIONE 2: Single accuracy con parametro fisso
 clf = svm.SVC(kernel='linear',C=1)

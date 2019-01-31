@@ -52,15 +52,33 @@ X_selected= np.transpose(X_selected)
 #con media: 0.9707824513794663 +/-( 0.009174944347157835 )
 #Accuratezza del miglior modello su tutto il dataset: 0.9841700587969244
 
+corr= X.corr().abs()
+columns= np.full((corr.shape[0],),True, dtype=bool)
+for i in range(corr.shape[0]):
+    for j in range(i+1, corr.shape[0]):
+        if corr.iloc[i,j]>=0.9:
+            if columns[j]:
+                columns[j]=False
+                
+selected_columns=X.columns[columns]
+X_selected= X[selected_columns]
+#utilizzando questo dataset il miglior modello rimane lo stesso ma l'accuratezza scende leggermente
+#(comunque meglio rispetto a feature selection in base alla varianza)        
+#Miglior tune: {'C': 10.0, 'gamma': 0.1, 'kernel': 'rbf'} 
+#con media: 0.970239710538218 +/-( 0.009364237624589815 )
+#Accuratezza del miglior modello su tutto il dataset: 0.9843509724106739
+
 
 #SEZIONE 2: Single accuracy con parametro fisso
+'''
 clf = svm.SVC(kernel='linear',C=1)
 clf.fit(X_train,Y_train)
 single_accuracy = clf.score(X_test,Y_test)
 print ("\nAccuratezza ottenuta con %s campioni per il training su %s: %s e C=1" % (nl,n,single_accuracy))
-
+'''
 
 #SEZIONE 3: K-fold Cross-Validation con parametro fisso
+'''
 print ("\nCalcolo accuratezza con 10-fold cross-validation e C=1...")
 kclf = svm.SVC(kernel='linear',C=1)
 kfoldscores = cross_val_score(kclf,X,Y,cv=10,scoring = 'accuracy')
@@ -68,7 +86,7 @@ print (kfoldscores)
 kmean=kfoldscores.mean()
 kstd=kfoldscores.std()
 print ("In media: %s +/-(%s)" % (kmean,kstd))
-
+'''
 
 #SEZIONE 4: K-fold Cross-Validation con parametro variabile
 '''

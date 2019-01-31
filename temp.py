@@ -47,7 +47,7 @@ for i in range(0,ds.shape[1]-1):
 clf = svm.SVC(kernel='linear',C=1)
 clf.fit(X_train,Y_train)
 single_accuracy = clf.score(X_test,Y_test)
-print ("Accuratezza ottenuta con %i campioni per il training su %i: %s e C=1" % (nl,n,single_accuracy))
+print ("Accuratezza ottenuta con %s campioni per il training su %s: %s e C=1" % (nl,n,single_accuracy))
 
 
 #SEZIONE 3: K-fold Cross-Validation con parametro fisso

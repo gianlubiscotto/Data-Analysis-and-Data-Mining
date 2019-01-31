@@ -33,7 +33,7 @@ for i in range(0,ds.shape[1]-1):
     xp = positive.iloc[:,i]
     xn = negative.iloc[:,i]
     colors = ['blue', 'red']
-    n, bins, patches = plt.hist([xp,xn], bins=[-1.5,-0.5,0.5,1.5],stacked=True, color=colors, label=['positive','negative'])
+    plt.hist([xp,xn], bins=[-1.5,-0.5,0.5,1.5],stacked=True, color=colors, label=['positive','negative'])
     plt.legend(prop={'size': 10})
     plt.xlabel('Values')
     plt.ylabel('Samples')
@@ -41,13 +41,15 @@ for i in range(0,ds.shape[1]-1):
     plt.axis([-1.5, 1.5, 0, len(ds)])
     plt.grid(True)
     plt.show()
+    variance = np.var(ds.iloc[:,i])
+    print(variance,np.mean(ds.iloc[:,i]))
 
 
 #SEZIONE 2: Single accuracy con parametro fisso
 clf = svm.SVC(kernel='linear',C=1)
 clf.fit(X_train,Y_train)
 single_accuracy = clf.score(X_test,Y_test)
-print ("Accuratezza ottenuta con %s campioni per il training su %s: %s e C=1" % (nl,n,single_accuracy))
+print ("\nAccuratezza ottenuta con %s campioni per il training su %s: %s e C=1" % (nl,n,single_accuracy))
 
 
 #SEZIONE 3: K-fold Cross-Validation con parametro fisso

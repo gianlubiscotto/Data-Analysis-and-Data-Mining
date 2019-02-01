@@ -43,16 +43,19 @@ for i in range(0,ds.shape[1]-1):
     plt.grid(True)
     plt.show()
     variance = np.var(ds.iloc[:,i])
+    print(variance)
     #selezione feature in base alla varianza
     if(variance>0.2):
         X_selected.append(np.array(ds.iloc[:,i]))
-X_selected= np.transpose(X_selected)        
+X_selected= np.transpose(X_selected)  
+#elimina la 19esima e la 21esima feature(indice 18 e 20)      
 #utilizzando questo dataset il miglior modello rimane lo stesso ma l'accuratezza scende leggermente        
 #Miglior tune: {'C': 10.0, 'gamma': 0.1, 'kernel': 'rbf'} 
 #con media: 0.9707824513794663 +/-( 0.009174944347157835 )
 #Accuratezza del miglior modello su tutto il dataset: 0.9841700587969244
 
-corr= X.corr().abs()
+df = pd.DataFrame(X_selected)
+corr= df.corr().abs()
 columns= np.full((corr.shape[0],),True, dtype=bool)
 for i in range(corr.shape[0]):
     for j in range(i+1, corr.shape[0]):
@@ -60,14 +63,20 @@ for i in range(corr.shape[0]):
             if columns[j]:
                 columns[j]=False
                 
-selected_columns=X.columns[columns]
-X_selected= X[selected_columns]
+selected_columns=df.columns[columns]
+X_selected= df[selected_columns]
+#elimina la 22esima feature(indice 21)
 #utilizzando questo dataset il miglior modello rimane lo stesso ma l'accuratezza scende leggermente
 #(comunque meglio rispetto a feature selection in base alla varianza)        
 #Miglior tune: {'C': 10.0, 'gamma': 0.1, 'kernel': 'rbf'} 
 #con media: 0.970239710538218 +/-( 0.009364237624589815 )
 #Accuratezza del miglior modello su tutto il dataset: 0.9843509724106739
 
+
+#eliminando entrambi i tipi di features abbiamo ottenuto un risultato meno accurato
+#Miglior tune: {'C': 10.0, 'gamma': 0.1, 'kernel': 'rbf'} 
+#con media: 0.9703301673450927 +/-( 0.009446480516524846 )
+#Accuratezza del miglior modello su tutto il dataset: 0.9840796019900497
 
 #SEZIONE 2: Single accuracy con parametro fisso
 '''
@@ -196,6 +205,17 @@ bias = clf.best_estimator_.intercept_
 model = clf.best_estimator_
 model.fit(X,Y)
 print("\nAccuratezza del miglior modello su tutto il dataset:",model.score(X,Y))
+#Miglior tune: {'C': 10.0, 'gamma': 0.1, 'kernel': 'rbf'} 
+#con media: 0.970872908186341 +/-( 0.009391939891934063 )
+
+#Modello completo: 
+# SVC(C=10.0, cache_size=200, class_weight=None, coef0=0.0,
+# decision_function_shape='ovr', degree=3, gamma=0.1, kernel='rbf',
+#  max_iter=-1, probability=False, random_state=None, shrinking=True,
+#  tol=0.001, verbose=False)
+
+#Accuratezza del miglior modello su tutto il dataset: 0.9844414292175486
 
 elapsed_time=time.time()-start_time
 print("\nElapsed time:",elapsed_time)
+#Elapsed time: 679.6059725284576

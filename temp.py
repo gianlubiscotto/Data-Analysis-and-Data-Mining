@@ -79,15 +79,15 @@ X_selected= df[selected_columns]
 #Accuratezza del miglior modello su tutto il dataset: 0.9840796019900497
 
 #SEZIONE 2: Single accuracy con parametro fisso
-'''
+
 clf = svm.SVC(kernel='linear',C=1)
 clf.fit(X_train,Y_train)
 single_accuracy = clf.score(X_test,Y_test)
 print ("\nAccuratezza ottenuta con %s campioni per il training su %s: %s e C=1" % (nl,n,single_accuracy))
-'''
+#Accuratezza ottenuta con 9950 campioni per il training su 11055: tra 0.92 e 0.94 circa
 
 #SEZIONE 3: K-fold Cross-Validation con parametro fisso
-'''
+
 print ("\nCalcolo accuratezza con 10-fold cross-validation e C=1...")
 kclf = svm.SVC(kernel='linear',C=1)
 kfoldscores = cross_val_score(kclf,X,Y,cv=10,scoring = 'accuracy')
@@ -95,17 +95,16 @@ print (kfoldscores)
 kmean=kfoldscores.mean()
 kstd=kfoldscores.std()
 print ("In media: %s +/-(%s)" % (kmean,kstd))
-'''
+#In media: 0.9273622048201187 +/-(0.006292528176258127)
 
 #SEZIONE 4: K-fold Cross-Validation con parametro variabile
-'''
 print("\nCalcolo accuratezza con 10-fold cross-validation e C variabile")
 C_best=None
 kmean_best=0
 kstd_best=np.inf
 k_scores = [] #lista per i K valori medi
 k_stds = [] #lista per le K deviazioni standard
-C_range = np.logspace(-1 , 1 , num=3)
+C_range = np.logspace(-1 , 2 , num=4)
 
 for C in C_range:
     print ("\nCalcolo accuratezza per C=%s" % C)
@@ -128,9 +127,11 @@ for C in C_range:
         
 plt.plot(C_range,k_scores)
 plt.xlabel("Valore di C")
+plt.xscale('log')
 plt.ylabel("Cross-Validated Accuracy")
+plt.show()
 print ("Miglior risultato ottenuto con C=%s e accuratezza media=%s +/-(%s)"%(C_best,kmean_best,kstd_best))
-'''
+#Miglior risultato con C=10 e accuratezza media 0.927362 +/-(0.006240)
 
 #SEZIONE 5: GridSearchCV tuning
 print("\nScelta del kernel e tuning dei parametri C e Gamma con GridSearchCV...")

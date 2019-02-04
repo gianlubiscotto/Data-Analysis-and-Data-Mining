@@ -27,10 +27,9 @@ Y_train = ds_shuff.iloc[:nl,-1]
 X_test = ds_shuff.iloc[nl:,:ds.shape[1]-1]
 Y_test = ds_shuff.iloc[nl:,-1]
 
+X_selected=[]
 
 #Plotting delle features
-'''
-X_selected=[]
 for i in range(0,ds.shape[1]-1):
     xp = positive.iloc[:,i]
     xn = negative.iloc[:,i]
@@ -43,7 +42,7 @@ for i in range(0,ds.shape[1]-1):
     plt.axis([-1.5, 1.5, 0, len(ds)])
     plt.grid(True)
     plt.show()
-'''  
+ 
 
 corr= ds.corr().abs()
 columns= np.full((corr.shape[0],),True, dtype=bool)
@@ -165,7 +164,7 @@ param_grid = [
 
 svc = svm.SVC()
 clf = GridSearchCV(svc, param_grid, cv=10, scoring="accuracy", n_jobs=-1)
-clf.fit(X_selected, Y)
+clf.fit(X, Y)
 print ("")
 
 for i in range(0,len(clf.cv_results_['params'])):
@@ -224,8 +223,8 @@ bias = clf.best_estimator_.intercept_
 
 #SEZIONE 6: training finale
 model = clf.best_estimator_
-model.fit(X_selected,Y)
-print("\nAccuratezza del miglior modello su tutto il dataset:",model.score(X_selected,Y))
+model.fit(X,Y)
+print("\nAccuratezza del miglior modello su tutto il dataset:",model.score(X,Y))
 #Miglior tune: {'C': 10.0, 'gamma': 0.1, 'kernel': 'rbf'} 
 #con media: 0.970872908186341 +/-( 0.009391939891934063 )
 

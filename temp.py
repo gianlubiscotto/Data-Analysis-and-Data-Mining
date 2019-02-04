@@ -29,6 +29,7 @@ Y_test = ds_shuff.iloc[nl:,-1]
 
 
 #Plotting delle features
+'''
 X_selected=[]
 for i in range(0,ds.shape[1]-1):
     xp = positive.iloc[:,i]
@@ -42,35 +43,54 @@ for i in range(0,ds.shape[1]-1):
     plt.axis([-1.5, 1.5, 0, len(ds)])
     plt.grid(True)
     plt.show()
-    variance = np.var(ds.iloc[:,i])
-    print(variance)
-    #selezione feature in base alla varianza
-    if(variance>0.2):
-        X_selected.append(np.array(ds.iloc[:,i]))
-X_selected= np.transpose(X_selected)  
-#elimina la 19esima e la 21esima feature(indice 18 e 20)      
-#utilizzando questo dataset il miglior modello rimane lo stesso ma l'accuratezza scende leggermente        
-#Miglior tune: {'C': 10.0, 'gamma': 0.1, 'kernel': 'rbf'} 
-#con media: 0.9707824513794663 +/-( 0.009174944347157835 )
-#Accuratezza del miglior modello su tutto il dataset: 0.9841700587969244
+'''  
 
-df = pd.DataFrame(X_selected)
-corr= df.corr().abs()
+corr= ds.corr().abs()
 columns= np.full((corr.shape[0],),True, dtype=bool)
 for i in range(corr.shape[0]):
-    for j in range(i+1, corr.shape[0]):
+    '''
+    #elimino le feature meno correlate con l'output (ne rimangono 12 con questa soglia)
+    if corr.iloc[i,corr.shape[0]-1]<0.1:
+        columns[i]=False
+        
+    #Miglior tune: {'C': 100.0, 'gamma': 0.1, 'kernel': 'rbf'} 
+    #con media: 0.9506105834464044 +/-( 0.012578220480502866 )
+    #Accuratezza del miglior modello su tutto il dataset: 0.965445499773858
+    '''   
+    for j in range(i+1, corr.shape[0]-1):
         if corr.iloc[i,j]>=0.9:
-            if columns[j]:
-                columns[j]=False
+            if columns[j] and columns[i]:
+                if corr.iloc[i,corr.shape[0]-1]>corr.iloc[j,corr.shape[0]-1]:
+                    columns[j]=False
+                else:
+                    columns[i]=False
                 
-selected_columns=df.columns[columns]
-X_selected= df[selected_columns]
+#selected_columns=ds.columns[columns]
+#X_selected= ds[selected_columns]
+#X_selected=X_selected.iloc[:,:X_selected.shape[1]-1]
+                    
 #elimina la 22esima feature(indice 21)
 #utilizzando questo dataset il miglior modello rimane lo stesso ma l'accuratezza scende leggermente
 #(comunque meglio rispetto a feature selection in base alla varianza)        
 #Miglior tune: {'C': 10.0, 'gamma': 0.1, 'kernel': 'rbf'} 
 #con media: 0.970239710538218 +/-( 0.009364237624589815 )
 #Accuratezza del miglior modello su tutto il dataset: 0.9843509724106739
+
+for i in range(0,ds.shape[1]-1):
+    variance = np.var(ds.iloc[:,i])
+    #selezione feature in base alla varianza
+    if(variance<0.2):
+        columns[i]=False
+        
+selected_columns=ds.columns[columns]
+X_selected= ds[selected_columns]     
+X_selected=X_selected.iloc[:,:X_selected.shape[1]-1]
+
+#elimina la 19esima e la 21esima feature(indice 18 e 20)      
+#utilizzando questo dataset il miglior modello rimane lo stesso ma l'accuratezza scende leggermente        
+#Miglior tune: {'C': 10.0, 'gamma': 0.1, 'kernel': 'rbf'} 
+#con media: 0.9707824513794663 +/-( 0.009174944347157835 )
+#Accuratezza del miglior modello su tutto il dataset: 0.9841700587969244
 
 
 #eliminando entrambi i tipi di features abbiamo ottenuto un risultato meno accurato
@@ -79,7 +99,7 @@ X_selected= df[selected_columns]
 #Accuratezza del miglior modello su tutto il dataset: 0.9840796019900497
 
 #SEZIONE 2: Single accuracy con parametro fisso
-
+'''
 clf = svm.SVC(kernel='linear',C=1)
 clf.fit(X_train,Y_train)
 single_accuracy = clf.score(X_test,Y_test)
@@ -132,10 +152,10 @@ plt.ylabel("Cross-Validated Accuracy")
 plt.show()
 print ("Miglior risultato ottenuto con C=%s e accuratezza media=%s +/-(%s)"%(C_best,kmean_best,kstd_best))
 #Miglior risultato con C=10 e accuratezza media 0.927362 +/-(0.006240)
-
+'''
 #SEZIONE 5: GridSearchCV tuning
-print("\nScelta del kernel e tuning dei parametri C e Gamma con GridSearchCV...")
 
+print("\nScelta del kernel e tuning dei parametri C e Gamma con GridSearchCV...")
 C_range = np.logspace(-2 , 2 , num=5)
 Gamma_range= np.logspace(-5, 1, num=7) 
 param_grid = [
@@ -145,7 +165,7 @@ param_grid = [
 
 svc = svm.SVC()
 clf = GridSearchCV(svc, param_grid, cv=10, scoring="accuracy", n_jobs=-1)
-clf.fit(X, Y)
+clf.fit(X_selected, Y)
 print ("")
 
 for i in range(0,len(clf.cv_results_['params'])):
@@ -204,8 +224,8 @@ bias = clf.best_estimator_.intercept_
 
 #SEZIONE 6: training finale
 model = clf.best_estimator_
-model.fit(X,Y)
-print("\nAccuratezza del miglior modello su tutto il dataset:",model.score(X,Y))
+model.fit(X_selected,Y)
+print("\nAccuratezza del miglior modello su tutto il dataset:",model.score(X_selected,Y))
 #Miglior tune: {'C': 10.0, 'gamma': 0.1, 'kernel': 'rbf'} 
 #con media: 0.970872908186341 +/-( 0.009391939891934063 )
 
@@ -216,7 +236,7 @@ print("\nAccuratezza del miglior modello su tutto il dataset:",model.score(X,Y))
 #  tol=0.001, verbose=False)
 
 #Accuratezza del miglior modello su tutto il dataset: 0.9844414292175486
-
+ 
 elapsed_time=time.time()-start_time
 print("\nElapsed time:",elapsed_time)
 #Elapsed time: 679.6059725284576

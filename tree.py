@@ -24,6 +24,33 @@ X_train = ds_shuff.iloc[:nl,:ds.shape[1]-1]
 Y_train = ds_shuff.iloc[:nl,-1]
 X_test = ds_shuff.iloc[nl:,:ds.shape[1]-1]
 Y_test = ds_shuff.iloc[nl:,-1]
+'''
+corr= ds.corr().abs()
+columns= np.full((corr.shape[0],),True, dtype=bool)
+for i in range(corr.shape[0]):
+
+    #elimino le feature meno correlate con l'output (ne rimangono 12 con questa soglia)
+    if corr.iloc[i,corr.shape[0]-1]<0.1:
+        columns[i]=False
+        
+    for j in range(i+1, corr.shape[0]-1):
+        if corr.iloc[i,j]>=0.9:
+            if columns[j] and columns[i]:
+                if corr.iloc[i,corr.shape[0]-1]>corr.iloc[j,corr.shape[0]-1]:
+                    columns[j]=False
+                else:
+                    columns[i]=False
+                
+for i in range(0,ds.shape[1]-1):
+    variance = np.var(ds.iloc[:,i])
+    #selezione feature in base alla varianza
+    if(variance<0.2):
+        columns[i]=False
+        
+selected_columns=ds.columns[columns]
+X_selected= ds[selected_columns]     
+X_selected=X_selected.iloc[:,:X_selected.shape[1]-1]
+'''
 
 clf = tree.DecisionTreeClassifier(max_depth=30)
 clf = clf.fit(X_train, Y_train)
@@ -54,6 +81,5 @@ t = tree.DecisionTreeClassifier()
 clf = GridSearchCV(t, parameters, cv=10, scoring="accuracy", n_jobs=-1)
 clf.fit(X, Y)
 print ("")
-print(clf.cv_results_['param_max_depth'])
 for i in range(0,len(clf.cv_results_['params'])):
     print ("Modello:",clf.cv_results_['params'][i], "accuracy:",clf.cv_results_['mean_test_score'][i])

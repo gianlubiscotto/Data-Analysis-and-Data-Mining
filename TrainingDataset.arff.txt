@@ -1,5 +1,3 @@
-@relation phishing
-
 @attribute having_IP_Address  { -1,1 }
 @attribute URL_Length   { 1,0,-1 }
 @attribute Shortining_Service { 1,-1 }

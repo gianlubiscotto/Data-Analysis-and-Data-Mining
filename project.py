@@ -15,6 +15,8 @@ from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import train_test_split
 
+start_time= time.time()
+
 ds=pd.read_csv("TrainingDataset.arff.txt",header=None, comment='@')
 train, test = train_test_split(ds, test_size=0.2)
 print np.shape(train),np.shape(test)
@@ -47,7 +49,7 @@ plt.ylabel("Accuracy")
 plt.legend(['Validation accuracy','Test accuracy'], prop={'size': 10})
 plt.show()
 '''
-C_range = np.logspace(-3 , 6, num=4)
+C_range = np.logspace(-3 , 5, num=4)
 print C_range
 parameters = {'C':C_range, 'kernel':['linear']}
 val_scores = []
@@ -72,3 +74,6 @@ plt.xscale('log')
 plt.ylabel("Accuracy")
 plt.legend(['Validation accuracy','Train accuracy'], prop={'size': 10})
 plt.show()
+
+elapsed_time=time.time()-start_time
+print("\nElapsed time:",elapsed_time)

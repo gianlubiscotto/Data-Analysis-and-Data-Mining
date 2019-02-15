@@ -13,6 +13,8 @@ start_time= time.time()
 #SEZIONE 1: Lettura dati
 ds=pd.read_csv("TrainingDataset.arff.txt",header=None, comment='@')
 
+
+
 #Shuffle per stratified sampling e splitting dei dati
 ds_shuff=shuffle(ds)
 positive= ds[ds.iloc[:,-1]>0]
